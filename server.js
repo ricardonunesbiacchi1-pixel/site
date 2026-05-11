@@ -1,11 +1,14 @@
-const cors = require("cors");
 const express = require("express");
-const app = express();
+const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
+/* ================= MIDDLEWARES ================= */
+
+app.use(cors()); // 🔥 CORREÇÃO PRINCIPAL
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -101,7 +104,7 @@ app.post("/login", (req, res) => {
     res.json({ user });
 });
 
-/* ================= PRODUCTS (CORRIGIDO) ================= */
+/* ================= PRODUCTS ================= */
 
 app.get("/products", (req, res) => {
     res.json(read("produtos.json"));
@@ -230,9 +233,7 @@ app.post("/reviews/like/:id", (req, res) => {
     const review = reviews.find(r => r.id == req.params.id);
 
     if (!review) {
-        return res.status(404).json({
-            error: "Avaliação não encontrada"
-        });
+        return res.status(404).json({ error: "Avaliação não encontrada" });
     }
 
     review.likes = (review.likes || 0) + 1;
@@ -245,7 +246,7 @@ app.post("/reviews/like/:id", (req, res) => {
     });
 });
 
-/* ================= START (CORRIGIDO PRA RENDER) ================= */
+/* ================= START ================= */
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log("🚀 servidor rodando na porta " + PORT);
