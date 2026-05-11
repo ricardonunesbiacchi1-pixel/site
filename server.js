@@ -25,7 +25,7 @@ function write(file, data) {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-/* ================= FRETE (SIMULADO) ================= */
+/* ================= FRETE ================= */
 
 app.post("/calcular-frete", (req, res) => {
     const { cep } = req.body;
@@ -42,7 +42,7 @@ app.post("/calcular-frete", (req, res) => {
     else if (primeiroNumero >= 4) base = 18;
     else base = 12;
 
-    const fretes = [
+    res.json([
         {
             name: "PAC",
             price: base.toFixed(2),
@@ -58,9 +58,7 @@ app.post("/calcular-frete", (req, res) => {
             price: (base + 20).toFixed(2),
             delivery_time: 1
         }
-    ];
-
-    res.json(fretes);
+    ]);
 });
 
 /* ================= USERS ================= */
@@ -102,7 +100,7 @@ app.post("/login", (req, res) => {
     res.json({ user });
 });
 
-/* ================= PRODUCTS ================= */
+/* ================= PRODUCTS (CORRIGIDO) ================= */
 
 app.get("/products", (req, res) => {
     res.json(read("produtos.json"));
@@ -160,8 +158,6 @@ app.post("/orders", (req, res) => {
 
     orders.push(order);
     write("orders.json", orders);
-
-    console.log("📦 Pedido:", order.id);
 
     res.json(order);
 });
@@ -248,7 +244,7 @@ app.post("/reviews/like/:id", (req, res) => {
     });
 });
 
-/* ================= START (CORRIGIDO PARA RENDER) ================= */
+/* ================= START (CORRIGIDO PRA RENDER) ================= */
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log("🚀 servidor rodando na porta " + PORT);
