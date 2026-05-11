@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Produto</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Inter, Arial, sans-serif;
+background:#0B1120;
+color:#F9FAFB;
+padding-bottom:90px;
+animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+
+from{
+opacity:0;
+transform:translateY(10px)
+}
+
+to{
+opacity:1;
+transform:translateY(0)
+}
+
+}
+
+/* CONTAINER */
+
+.container{
+display:flex;
+gap:25px;
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+}
+
+/* LEFT */
+
+.left{
+flex:1;
+}
+
+.left img{
+width:100%;
+border-radius:22px;
+box-shadow:
+0 10px 40px rgba(0,0,0,.35);
+}
+
+/* RIGHT */
+
+.right{
+flex:1;
+background:#111827;
+padding:20px;
+border-radius:24px;
+box-shadow:
+0 10px 30px rgba(0,0,0,.25);
+border:1px solid rgba(255,255,255,.04);
+height:fit-content;
+}
+
+/* PRODUCT */
+
+.name{
+font-size:30px;
+font-weight:700;
+margin-top:18px;
+line-height:1.2;
+}
+
+.desc{
+opacity:.8;
+font-size:15px;
+margin-top:12px;
+line-height:1.6;
+color:#CBD5E1;
+}
+
+.price{
+font-size:42px;
+color:#22C55E;
+font-weight:700;
+margin-top:15px;
+}
+
+.parcelas{
+margin-top:8px;
+opacity:.75;
+font-size:15px;
+}
+
+/* FRETE */
+
+.frete{
+background:#0F172A;
+padding:18px;
+border-radius:18px;
+margin-top:25px;
+border:1px solid rgba(255,255,255,.04);
+}
+
+input,
+select{
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:14px;
+border:none;
+outline:none;
+box-sizing:border-box;
+background:#1F2937;
+color:white;
+font-size:14px;
+font-family:Inter;
+transition:.2s;
+}
+
+input:focus,
+select:focus{
+background:#263244;
+}
+
+/* BUTTONS */
+
+button{
+width:100%;
+margin-top:12px;
+padding:14px;
+border:none;
+border-radius:14px;
+background:
+linear-gradient(
+135deg,
+#2563EB,
+#3B82F6
+);
+color:white;
+cursor:pointer;
+font-weight:600;
+font-family:Inter;
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+opacity:.94;
+}
+
+/* ACTIONS */
+
+.actions{
+margin-top:25px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.btn{
+padding:16px;
+font-size:16px;
+}
+
+.cart{
+background:
+linear-gradient(
+135deg,
+#15803D,
+#22C55E
+);
+}
+
+.buy{
+background:
+linear-gradient(
+135deg,
+#2563EB,
+#3B82F6
+);
+}
+
+/* RELACIONADOS */
+
+.relacionados{
+padding:20px;
+max-width:1200px;
+margin:auto;
+}
+
+.relacionados h3{
+font-size:24px;
+margin-bottom:15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+}
+
+.card{
+background:#111827;
+padding:12px;
+border-radius:18px;
+cursor:pointer;
+transition:.25s;
+box-shadow:
+0 10px 30px rgba(0,0,0,.2);
+border:1px solid rgba(255,255,255,.04);
+}
+
+.card:hover{
+transform:translateY(-4px);
+background:#1F2937;
+}
+
+.card img{
+border-radius:14px;
+height:170px;
+width:100%;
+object-fit:cover;
+}
+
+.card p{
+margin:10px 0 5px 0;
+font-weight:500;
+}
+
+/* AVALIAÇÕES */
+
+.avaliacoes{
+max-width:1200px;
+margin:35px auto 110px auto;
+background:#111827;
+padding:25px;
+border-radius:24px;
+box-shadow:
+0 10px 30px rgba(0,0,0,.25);
+border:1px solid rgba(255,255,255,.04);
+}
+
+.avaliacoes h3{
+font-size:24px;
+margin-top:0;
+}
+
+.avaliacao-item{
+background:#1F2937;
+padding:16px;
+border-radius:18px;
+margin-top:15px;
+}
+
+.avaliacao-item p{
+line-height:1.6;
+color:#E5E7EB;
+}
+
+.avaliacao-item button{
+background:#0F172A;
+margin-top:12px;
+}
+
+/* NAV */
+
+nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:72px;
+background:rgba(11,17,32,.94);
+backdrop-filter:blur(12px);
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(255,255,255,.05);
+z-index:200;
+}
+
+nav div{
+font-size:12px;
+text-align:center;
+cursor:pointer;
+transition:.2s;
+opacity:.9;
+}
+
+nav div:hover{
+opacity:1;
+transform:translateY(-2px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+
+<img id="img">
+
+<div class="name" id="name"></div>
+
+<div class="desc" id="desc"></div>
+
+</div>
+
+<div class="right">
+
+<div class="price" id="price"></div>
+
+<div class="parcelas" id="parcelas"></div>
+
+<div style="
+margin-top:15px;
+font-size:14px;
+color:#9CA3AF;
+">
+🚚 Frete grátis acima de R$ 199
+</div>
+
+<div class="frete">
+
+📍 Calcular frete
+
+<input
+id="cep"
+placeholder="Digite seu CEP"
+>
+
+<button onclick="calcularFrete()">
+Calcular
+</button>
+
+<div id="freteRes"></div>
+
+</div>
+
+<div class="actions">
+
+<button
+class="btn cart"
+onclick="addCarrinho()">
+
+Adicionar ao carrinho
+
+</button>
+
+<button
+class="btn buy"
+onclick="comprarAgora()">
+
+Comprar agora
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="relacionados">
+
+<h3>🔥 Relacionados</h3>
+
+<div class="grid" id="rel"></div>
+
+</div>
+
+<div class="avaliacoes">
+
+<h3>⭐ Avaliações</h3>
+
+<div id="listaAvaliacoes"></div>
+
+<input
+id="nomeAvaliacao"
+placeholder="Seu nome"
+>
+
+<input
+id="comentarioAvaliacao"
+placeholder="Escreva sua avaliação"
+>
+
+<select id="notaAvaliacao">
+
+<option value="5">
+★★★★★ 5
+</option>
+
+<option value="4">
+★★★★☆ 4
+</option>
+
+<option value="3">
+★★★☆☆ 3
+</option>
+
+<option value="2">
+★★☆☆☆ 2
+</option>
+
+<option value="1">
+★☆☆☆☆ 1
+</option>
+
+</select>
+
+<button onclick="enviarAvaliacao()">
+
+Enviar avaliação
+
+</button>
+
+</div>
+
+<nav>
+
+<div onclick="location.href='index.html'">
+🏠<br>Home
+</div>
+
+<div onclick="location.href='carrinho.html'">
+🛒<br>Carrinho
+</div>
+
+<div onclick="location.href='pedidos.html'">
+📦<br>Pedidos
+</div>
+
+<div>
+👤<br>Conta
+</div>
+
+</nav>
+
+<script>
+
+const API =
+"https://juncture-erasure-gangway.ngrok-free.dev";
+
+let produto = null;
+
+function getId(){
+
+return new URLSearchParams(
+location.search
+).get("id");
+
+}
+
+async function load(){
+
+const res =
+await fetch(API + "/products");
+
+const data =
+await res.json();
+
+produto =
+data.find(p => p.id == getId());
+
+if(!produto){
+
+alert("Produto não encontrado");
+
+return;
+}
+
+document.getElementById("img").src =
+produto.image;
+
+document.getElementById("name").innerText =
+produto.name;
+
+document.getElementById("desc").innerText =
+produto.description || "";
+
+document.getElementById("price").innerText =
+"R$ " + produto.price;
+
+document.getElementById("parcelas").innerText =
+"6x de R$ " +
+(produto.price / 6).toFixed(2);
+
+const rel =
+document.getElementById("rel");
+
+rel.innerHTML = "";
+
+data.slice(0,6).forEach(p=>{
+
+rel.innerHTML += `
+
+<div class="card"
+onclick="location.href='produtos1.html?id=${p.id}'">
+
+<img src="${p.image}">
+
+<p>${p.name}</p>
+
+<b>R$ ${p.price}</b>
+
+</div>
+`;
+});
+
+carregarAvaliacoes();
+}
+
+/* FRETE */
+
+async function calcularFrete(){
+
+let cep =
+document.getElementById("cep").value;
+
+if(cep.length < 8){
+
+document.getElementById("freteRes").innerText =
+"CEP inválido";
+
+return;
+}
+
+document.getElementById("freteRes").innerHTML =
+"Calculando...";
+
+try{
+
+const res =
+await fetch(API + "/calcular-frete", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({ cep })
+
+});
+
+const data = await res.json();
+
+let html = "";
+
+data.forEach(frete=>{
+
+html += `
+<div style="
+margin-top:15px;
+background:#1F2937;
+padding:12px;
+border-radius:12px;
+">
+
+<b>${frete.name}</b><br>
+
+R$ ${frete.price}<br>
+
+${frete.delivery_time} dias
+
+</div>
+`;
+});
+
+document.getElementById("freteRes").innerHTML =
+html;
+
+}catch(err){
+
+document.getElementById("freteRes").innerText =
+"Erro ao calcular";
+}
+}
+
+/* CARRINHO */
+
+function addCarrinho(){
+
+let c =
+JSON.parse(localStorage.getItem("carrinho")) || [];
+
+let i =
+c.find(x => x.id == produto.id);
+
+if(i){
+
+i.qtd++;
+
+}else{
+
+c.push({
+...produto,
+qtd:1
+});
+
+}
+
+localStorage.setItem(
+"carrinho",
+JSON.stringify(c)
+);
+
+alert("Adicionado ao carrinho");
+}
+
+function comprarAgora(){
+
+addCarrinho();
+
+location.href = "checkout.html";
+}
+
+/* AVALIAÇÕES */
+
+async function carregarAvaliacoes(){
+
+try{
+
+const res =
+await fetch(API + "/reviews/" + produto.id);
+
+const avaliacoes =
+await res.json();
+
+const lista =
+document.getElementById("listaAvaliacoes");
+
+lista.innerHTML = "";
+
+if(avaliacoes.length === 0){
+
+lista.innerHTML =
+"<p>Nenhuma avaliação ainda.</p>";
+
+return;
+}
+
+avaliacoes.forEach(av => {
+
+let estrelas =
+"⭐".repeat(av.nota);
+
+lista.innerHTML += `
+
+<div class="avaliacao-item">
+
+<b>${av.nome}</b>
+
+<div style="margin:8px 0">
+${estrelas}
+</div>
+
+<p>${av.comentario}</p>
+
+<button
+onclick="curtirAvaliacao('${av.id}')">
+
+👍 Curtir (${av.likes || 0})
+
+</button>
+
+</div>
+`;
+});
+
+}catch(err){
+
+console.log(
+"Erro ao carregar avaliações:",
+err
+);
+
+}
+}
+
+async function enviarAvaliacao(){
+
+let nome =
+document.getElementById("nomeAvaliacao").value;
+
+let comentario =
+document.getElementById(
+"comentarioAvaliacao"
+).value;
+
+let nota =
+Number(
+document.getElementById(
+"notaAvaliacao"
+).value
+);
+
+if(!nome || !comentario){
+
+alert("Preencha todos os campos");
+
+return;
+}
+
+try{
+
+await fetch(API + "/reviews", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+productId: produto.id,
+nome: nome,
+comentario: comentario,
+nota: nota
+
+})
+});
+
+document.getElementById(
+"nomeAvaliacao"
+).value = "";
+
+document.getElementById(
+"comentarioAvaliacao"
+).value = "";
+
+carregarAvaliacoes();
+
+}catch(err){
+
+console.log(
+"Erro ao enviar avaliação:",
+err
+);
+
+alert("Erro ao enviar avaliação");
+}
+}
+
+async function curtirAvaliacao(id){
+
+try{
+
+await fetch(
+API + "/reviews/like/" + id,
+{
+method:"POST"
+}
+);
+
+carregarAvaliacoes();
+
+}catch(err){
+
+console.log("Erro ao curtir:", err);
+
+}
+}
+
+load();
+
+</script>
+
+</body>
+</html>

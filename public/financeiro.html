@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#020617;
+    color:white;
+}
+
+header{
+    background:#0f172a;
+    padding:20px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.card{
+    background:#0f172a;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.big{
+    font-size:28px;
+    font-weight:bold;
+    margin-top:10px;
+    color:#22c55e;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:#111827;
+    color:white;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.progress{
+    background:#111827;
+    height:25px;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:15px;
+}
+
+.bar{
+    height:100%;
+    background:#22c55e;
+    width:0%;
+    transition:.3s;
+}
+
+.back{
+    background:#64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>💰 Financeiro</header>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card">
+    <h3>Faturamento</h3>
+    <div class="big" id="faturamento">R$ 0,00</div>
+</div>
+
+<div class="card">
+    <h3>Lucro Estimado</h3>
+    <div class="big" id="lucro">R$ 0,00</div>
+</div>
+
+<div class="card">
+    <h3>Total Pedidos</h3>
+    <div class="big" id="pedidos">0</div>
+</div>
+
+<div class="card">
+    <h3>Meta Mensal</h3>
+    <input id="meta" placeholder="Digite meta em R$">
+    <button onclick="salvarMeta()">Salvar Meta</button>
+
+    <div class="progress">
+        <div class="bar" id="bar"></div>
+    </div>
+
+    <p id="metaTexto"></p>
+</div>
+
+</div>
+
+<button class="back" onclick="location.href='admin.html'">
+Voltar ao Admin
+</button>
+
+</div>
+
+<script>
+if(localStorage.getItem("adminLogado") !== "true"){
+    location.href = "login-admin.html";
+}
+
+function carregarFinanceiro(){
+
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    let meta = Number(localStorage.getItem("metaMensal")) || 0;
+
+    let faturamento = 0;
+
+    pedidos.forEach(p=>{
+        faturamento += Number(p.total || 0);
+    });
+
+    let lucro = faturamento * 0.35; // margem 35%
+
+    document.getElementById("faturamento").innerText =
+        "R$ " + faturamento.toFixed(2);
+
+    document.getElementById("lucro").innerText =
+        "R$ " + lucro.toFixed(2);
+
+    document.getElementById("pedidos").innerText = pedidos.length;
+
+    if(meta > 0){
+        let porcentagem = (faturamento / meta) * 100;
+        if(porcentagem > 100) porcentagem = 100;
+
+        document.getElementById("bar").style.width = porcentagem + "%";
+        document.getElementById("metaTexto").innerText =
+            porcentagem.toFixed(1) + "% da meta concluída";
+    }
+}
+
+function salvarMeta(){
+    let meta = document.getElementById("meta").value;
+
+    localStorage.setItem("metaMensal", meta);
+
+    carregarFinanceiro();
+}
+
+carregarFinanceiro();
+</script>
+
+</body>
+</html>

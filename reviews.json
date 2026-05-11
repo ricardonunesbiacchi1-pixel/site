@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1778215354327,
+    "productId": 2,
+    "nome": "teste",
+    "comentario": "1111",
+    "nota": 5,
+    "date": "2026-05-08T04:42:34.327Z"
+  },
+  {
+    "id": 1778215018610,
+    "productId": 2,
+    "nome": "teste",
+    "comentario": "teste",
+    "nota": 5,
+    "date": "2026-05-08T04:36:58.610Z"
+  }
+]

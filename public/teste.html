@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>App Loja</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#020617;
+color:white;
+padding-bottom:70px;
+}
+
+header{
+position:sticky;
+top:0;
+z-index:20;
+background:#0f172a;
+padding:10px;
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.search{
+flex:1;
+background:#111827;
+padding:10px;
+border-radius:10px;
+color:white;
+border:none;
+}
+
+.banner{
+margin:10px;
+height:140px;
+border-radius:15px;
+background:linear-gradient(135deg,#16a34a,#0f172a);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+font-size:20px;
+text-align:center;
+box-shadow:0 5px 20px rgba(0,0,0,0.4);
+}
+
+.banner span{
+font-size:13px;
+margin-top:5px;
+opacity:0.8;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+padding:10px;
+}
+
+.card{
+background:#0f172a;
+border-radius:12px;
+overflow:hidden;
+cursor:pointer;
+transition:0.2s;
+}
+
+.card:active{
+transform:scale(0.97);
+}
+
+.card img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.card-body{
+padding:8px;
+}
+
+.card-body h4{
+margin:0;
+font-size:15px;
+}
+
+.price{
+color:#22c55e;
+font-weight:bold;
+font-size:18px;
+margin-top:6px;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+background:#16a34a;
+color:white;
+border-radius:8px;
+margin-top:8px;
+font-weight:bold;
+}
+
+.cart-btn{
+position:fixed;
+bottom:80px;
+right:15px;
+background:#16a34a;
+padding:14px;
+border-radius:50px;
+z-index:30;
+box-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+opacity:0;
+visibility:hidden;
+transition:0.3s;
+z-index:50;
+}
+
+.overlay.active{
+opacity:1;
+visibility:visible;
+}
+
+#cart{
+position:fixed;
+top:0;
+right:-100%;
+width:85%;
+max-width:350px;
+height:100%;
+background:#0f172a;
+z-index:100;
+padding:15px;
+transition:0.3s;
+overflow-y:auto;
+}
+
+#cart.active{
+right:0;
+}
+
+.item{
+display:flex;
+gap:10px;
+align-items:center;
+background:#111827;
+padding:10px;
+border-radius:10px;
+margin-bottom:8px;
+}
+
+.item img{
+width:45px;
+height:45px;
+border-radius:8px;
+object-fit:cover;
+}
+
+.qty{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.qty button{
+width:28px;
+height:28px;
+padding:0;
+}
+
+nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:60px;
+background:#0f172a;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid #1e293b;
+z-index:200;
+}
+
+nav div{
+font-size:12px;
+text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<input class="search" placeholder="Buscar produtos..." onkeyup="buscar(this.value)">
+</header>
+
+<div class="banner">
+🔥 SUPER OFERTAS
+<span>Frete grátis acima de R$ 199</span>
+</div>
+
+<div class="grid" id="produtos"></div>
+
+<div class="cart-btn" onclick="openCart()">
+🛒 <span id="count">0</span>
+</div>
+
+<div class="overlay" onclick="closeCart()" id="overlay"></div>
+
+<div id="cart">
+<h3>Carrinho</h3>
+<div id="items"></div>
+<h3 id="total"></h3>
+<button onclick="checkout()">Finalizar Compra</button>
+</div>
+
+<nav>
+<div>🏠<br>Home</div>
+<div onclick="openCart()">🛒<br>Carrinho</div>
+<div onclick="location.href='pedidos.html'">📦<br>Pedidos</div>
+<div>🔥<br>Ofertas</div>
+</nav>
+
+<script>
+
+let produtos = [
+
+{
+id:1,
+name:"Fone Bluetooth",
+price:129.90,
+image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
+description:"Fone sem fio bluetooth premium"
+},
+
+{
+id:2,
+name:"Relógio Smartwatch",
+price:219.90,
+image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
+description:"Relógio inteligente esportivo"
+},
+
+{
+id:3,
+name:"Roupa Feminina",
+price:89.90,
+image:"https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600",
+description:"Moda feminina elegante"
+},
+
+{
+id:4,
+name:"Luminária Decorativa",
+price:74.90,
+image:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600",
+description:"Luminária moderna LED"
+},
+
+{
+id:5,
+name:"Banco de Bicicleta",
+price:59.90,
+image:"https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600",
+description:"Banco confortável para bike"
+}
+
+];
+
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+const produtosDiv = document.getElementById("produtos");
+const itemsDiv = document.getElementById("items");
+
+/* ABRIR PRODUTO */
+function abrirProduto(id){
+
+document.body.style.transition = "0.3s";
+document.body.style.transform = "translateX(-100%)";
+document.body.style.opacity = "0";
+
+setTimeout(()=>{
+window.location.href = "produtos1.html?id=" + id;
+},300);
+
+}
+
+/* RENDER */
+function render(lista){
+
+produtosDiv.innerHTML="";
+
+lista.forEach(p=>{
+
+produtosDiv.innerHTML += `
+<div class="card" onclick="abrirProduto(${p.id})">
+
+<img src="${p.image}">
+
+<div class="card-body">
+
+<h4>${p.name}</h4>
+
+<div class="price">
+R$ ${p.price.toFixed(2)}
+</div>
+
+<button onclick='event.stopPropagation(); comprarAgora(${JSON.stringify(p)})'>
+Comprar Agora
+</button>
+
+</div>
+</div>
+`;
+
+});
+
+}
+
+/* BUSCA */
+function buscar(txt){
+
+txt = txt.toLowerCase();
+
+const filtrados = produtos.filter(p=>
+p.name.toLowerCase().includes(txt)
+);
+
+render(filtrados);
+
+}
+
+/* COMPRAR AGORA */
+function comprarAgora(p){
+
+let item = carrinho.find(i => i.id === p.id);
+
+if(item){
+item.qtd++;
+}else{
+carrinho.push({
+id:p.id,
+name:p.name,
+price:Number(p.price),
+image:p.image,
+qtd:1
+});
+}
+
+save();
+
+window.location.href = "checkout.html";
+
+}
+
+/* CARRINHO */
+function openCart(){
+document.getElementById("cart").classList.add("active");
+document.getElementById("overlay").classList.add("active");
+}
+
+function closeCart(){
+document.getElementById("cart").classList.remove("active");
+document.getElementById("overlay").classList.remove("active");
+}
+
+function change(id,d){
+
+let i = carrinho.find(i=>i.id===id);
+
+i.qtd += d;
+
+if(i.qtd<=0){
+carrinho = carrinho.filter(x=>x.id!==id);
+}
+
+save();
+
+}
+
+function save(){
+
+localStorage.setItem("carrinho",JSON.stringify(carrinho));
+
+update();
+
+}
+
+function update(){
+
+itemsDiv.innerHTML="";
+
+let total=0;
+let count=0;
+
+carrinho.forEach(i=>{
+
+total += i.price*i.qtd;
+count += i.qtd;
+
+itemsDiv.innerHTML += `
+<div class="item">
+
+<img src="${i.image}">
+
+<div style="flex:1">
+${i.name}
+<br>
+R$ ${i.price}
+</div>
+
+<div class="qty">
+<button onclick="change(${i.id},-1)">-</button>
+${i.qtd}
+<button onclick="change(${i.id},1)">+</button>
+</div>
+
+</div>
+`;
+
+});
+
+document.getElementById("count").innerText = count;
+
+document.getElementById("total").innerText =
+"Total R$ " + total.toFixed(2);
+
+}
+
+function checkout(){
+location.href="checkout.html";
+}
+
+render(produtos);
+update();
+
+</script>
+
+</body>
+</html>

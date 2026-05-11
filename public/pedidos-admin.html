@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Pedidos</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:15px;
+}
+
+.card{
+background:#111827;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+}
+
+.info{
+font-size:14px;
+margin:4px 0;
+color:#cbd5f5;
+}
+
+select{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+background:#0f172a;
+color:white;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#22c55e;
+color:white;
+}
+
+.del{
+background:#ef4444;
+}
+
+.status{
+display:inline-block;
+padding:4px 10px;
+border-radius:8px;
+background:#1f2937;
+margin-top:5px;
+font-size:12px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+<h2>📦 Pedidos Admin</h2>
+<div id="lista"></div>
+</div>
+
+<script>
+
+const API = "https://juncture-erasure-gangway.ngrok-free.dev";
+
+const lista = document.getElementById("lista");
+
+async function carregar(){
+
+try{
+
+const res = await fetch(API + "/orders");
+const pedidos = await res.json();
+
+lista.innerHTML = "";
+
+if(!Array.isArray(pedidos)){
+lista.innerHTML = "Erro na API";
+return;
+}
+
+if(pedidos.length === 0){
+lista.innerHTML = "Nenhum pedido";
+return;
+}
+
+pedidos.forEach(p=>{
+
+const itens = (p.items || [])
+.map(i => i.name || i.productId || "item")
+.join(", ");
+
+const card = document.createElement("div");
+card.className = "card";
+
+card.innerHTML = `
+<strong>Pedido #${p.id}</strong>
+
+<div class="info">👤 ${p.cliente || "-"}</div>
+<div class="info">📦 ${itens}</div>
+<div class="info">💰 R$ ${p.total || 0}</div>
+<div class="info">📍 ${p.endereco || "-"}</div>
+<div class="info">💳 ${p.pagamento || "-"}</div>
+
+<span class="status">${p.status || "pendente"}</span>
+
+<select id="s${p.id}">
+<option value="pendente">pendente</option>
+<option value="preparando">preparando</option>
+<option value="enviado">enviado</option>
+<option value="entregue">entregue</option>
+</select>
+
+<button onclick="atualizar(${p.id})">Atualizar status</button>
+<button class="del" onclick="deletar(${p.id})">Excluir</button>
+`;
+
+lista.appendChild(card);
+
+});
+
+}catch(err){
+console.log(err);
+lista.innerHTML = "Erro ao carregar pedidos";
+}
+
+}
+
+async function atualizar(id){
+
+const status = document.getElementById("s"+id).value;
+
+await fetch(API + "/orders/" + id,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({status})
+});
+
+carregar();
+
+}
+
+async function deletar(id){
+
+await fetch(API + "/orders/" + id,{
+method:"DELETE"
+});
+
+carregar();
+
+}
+
+carregar();
+
+</script>
+
+</body>
+</html>

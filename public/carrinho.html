@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Carrinho</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Inter, Arial, sans-serif;
+background:#0B1120;
+color:#F9FAFB;
+padding-bottom:110px;
+}
+
+/* HEADER */
+
+.header{
+position:sticky;
+top:0;
+z-index:50;
+background:rgba(11,17,32,.92);
+backdrop-filter:blur(12px);
+padding:18px;
+font-size:22px;
+font-weight:700;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:18px;
+}
+
+/* ITEM */
+
+.item{
+background:#111827;
+border-radius:22px;
+padding:16px;
+margin-bottom:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+box-shadow:
+0 10px 30px rgba(0,0,0,.2);
+border:1px solid rgba(255,255,255,.04);
+transition:.2s;
+}
+
+.item:hover{
+background:#1F2937;
+transform:translateY(-2px);
+}
+
+.item h3{
+margin:0;
+font-size:16px;
+line-height:1.4;
+}
+
+.item p{
+margin-top:6px;
+color:#9CA3AF;
+}
+
+/* QUANTITY */
+
+.qty{
+display:flex;
+align-items:center;
+gap:8px;
+margin-top:10px;
+}
+
+.qty button{
+width:34px;
+height:34px;
+border:none;
+border-radius:10px;
+background:
+linear-gradient(
+135deg,
+#2563EB,
+#3B82F6
+);
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+transition:.2s;
+}
+
+.qty button:hover{
+opacity:.9;
+transform:scale(1.05);
+}
+
+/* TOTAL */
+
+.total-box{
+position:fixed;
+bottom:75px;
+left:0;
+width:100%;
+background:rgba(11,17,32,.95);
+backdrop-filter:blur(12px);
+padding:18px;
+border-top:1px solid rgba(255,255,255,.05);
+box-shadow:
+0 -10px 30px rgba(0,0,0,.25);
+}
+
+.total{
+font-size:26px;
+font-weight:700;
+color:#22C55E;
+margin-bottom:14px;
+}
+
+/* BUTTON */
+
+.checkout-btn{
+width:100%;
+padding:16px;
+border:none;
+border-radius:16px;
+background:
+linear-gradient(
+135deg,
+#15803D,
+#22C55E
+);
+color:white;
+font-size:16px;
+font-weight:700;
+cursor:pointer;
+transition:.2s;
+font-family:Inter;
+}
+
+.checkout-btn:hover{
+opacity:.94;
+transform:translateY(-2px);
+}
+
+/* EMPTY */
+
+.empty{
+text-align:center;
+margin-top:80px;
+opacity:.7;
+font-size:18px;
+}
+
+/* NAV */
+
+nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:72px;
+background:rgba(11,17,32,.95);
+backdrop-filter:blur(12px);
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(255,255,255,.05);
+z-index:200;
+}
+
+nav div{
+font-size:12px;
+text-align:center;
+cursor:pointer;
+opacity:.9;
+transition:.2s;
+}
+
+nav div:hover{
+opacity:1;
+transform:translateY(-2px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+🛒 Meu Carrinho
+</div>
+
+<div class="container">
+
+<div id="cart"></div>
+
+</div>
+
+<div class="total-box">
+
+<div class="total">
+Total: R$ <span id="total">0.00</span>
+</div>
+
+<button
+class="checkout-btn"
+onclick="finalizarCompra()">
+
+Finalizar Compra
+
+</button>
+
+</div>
+
+<nav>
+
+<div onclick="location.href='index.html'">
+🏠<br>Home
+</div>
+
+<div>
+🛒<br>Carrinho
+</div>
+
+<div onclick="location.href='pedidos.html'">
+📦<br>Pedidos
+</div>
+
+<div>
+👤<br>Conta
+</div>
+
+</nav>
+
+<script>
+
+const API =
+"https://juncture-erasure-gangway.ngrok-free.dev";
+
+/* CARRINHO */
+
+let cart =
+JSON.parse(localStorage.getItem("carrinho")) || [];
+
+/* RENDER */
+
+function renderCart(){
+
+const container =
+document.getElementById("cart");
+
+container.innerHTML = "";
+
+let total = 0;
+
+/* CARRINHO VAZIO */
+
+if(cart.length === 0){
+
+container.innerHTML = `
+
+<div class="empty">
+
+🛒 Seu carrinho está vazio
+
+</div>
+`;
+
+document.getElementById("total")
+.innerText = "0.00";
+
+return;
+}
+
+cart.forEach(item => {
+
+total += item.price * item.qty;
+
+container.innerHTML += `
+
+<div class="item">
+
+<div style="flex:1">
+
+<h3>${item.name}</h3>
+
+<p>
+R$ ${item.price.toFixed(2)}
+</p>
+
+<div class="qty">
+
+<button onclick="changeQty(${item.id}, -1)">
+-
+</button>
+
+<span>${item.qty}</span>
+
+<button onclick="changeQty(${item.id}, 1)">
++
+</button>
+
+</div>
+
+</div>
+
+<div>
+
+<b style="
+font-size:18px;
+color:#22C55E;
+">
+
+R$ ${(item.price * item.qty).toFixed(2)}
+
+</b>
+
+</div>
+
+</div>
+`;
+});
+
+document.getElementById("total")
+.innerText = total.toFixed(2);
+}
+
+/* ALTERAR QTD */
+
+function changeQty(id, change){
+
+const item =
+cart.find(i => i.id === id);
+
+if(item){
+
+item.qty += change;
+
+}
+
+cart =
+cart.filter(i => i.qty > 0);
+
+localStorage.setItem(
+"carrinho",
+JSON.stringify(cart)
+);
+
+renderCart();
+}
+
+/* FINALIZAR */
+
+async function finalizarCompra(){
+
+if(cart.length === 0){
+
+alert("Carrinho vazio!");
+
+return;
+}
+
+try{
+
+const user =
+JSON.parse(localStorage.getItem("user"));
+
+const res =
+await fetch(API + "/orders", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+userId:user?.id || null,
+
+cliente:user?.name || "Cliente",
+
+items:cart,
+
+total:cart.reduce(
+(s,i)=> s + i.price * i.qty,
+0
+),
+
+status:"pendente"
+
+})
+});
+
+await res.json();
+
+alert("Pedido realizado com sucesso!");
+
+cart = [];
+
+localStorage.removeItem("carrinho");
+
+renderCart();
+
+}catch(err){
+
+console.log(err);
+
+alert("Erro ao enviar pedido");
+}
+}
+
+/* INIT */
+
+renderCart();
+
+</script>
+
+</body>
+</html>

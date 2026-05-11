@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#020617;
+    color:white;
+}
+
+header{
+    background:#0f172a;
+    padding:20px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+.container{
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    max-width:800px;
+    margin:auto;
+}
+
+.card{
+    background:#0f172a;
+    border-radius:16px;
+    padding:25px 15px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.icon{
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+.title{
+    font-size:16px;
+    font-weight:bold;
+}
+
+.subtitle{
+    font-size:12px;
+    opacity:.7;
+    margin-top:5px;
+}
+
+nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#0f172a;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    border-top:1px solid #1e293b;
+}
+
+nav div{
+    font-size:12px;
+    text-align:center;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+⚙️ Painel Administrativo
+</header>
+
+<div class="container">
+
+<div class="card" onclick="location.href='pedidos-admin.html'">
+    <div class="icon">📦</div>
+    <div class="title">Pedidos Admin</div>
+    <div class="subtitle">Gerenciar pedidos</div>
+</div>
+
+<div class="card" onclick="location.href='financeiro.html'">
+    <div class="icon">💰</div>
+    <div class="title">Financeiro</div>
+    <div class="subtitle">Lucro e metas</div>
+</div>
+
+<!-- 🔥 NOVO CARD -->
+<div class="card" onclick="location.href='lucro.html'">
+    <div class="icon">📊</div>
+    <div class="title">Lucro por Produto</div>
+    <div class="subtitle">Margem e ganhos</div>
+</div>
+
+<div class="card" onclick="location.href='criarproduto.html'">
+    <div class="icon">➕</div>
+    <div class="title">Criar Produto</div>
+    <div class="subtitle">Cadastrar novos produtos</div>
+</div>
+
+<div class="card" onclick="location.href='index.html'">
+    <div class="icon">🛒</div>
+    <div class="title">Loja</div>
+    <div class="subtitle">Ver site principal</div>
+</div>
+
+<div class="card" onclick="location.href='pedidos.html'">
+    <div class="icon">📋</div>
+    <div class="title">Pedidos Cliente</div>
+    <div class="subtitle">Área do cliente</div>
+</div>
+
+<div class="card" onclick="logout()">
+    <div class="icon">🚪</div>
+    <div class="title">Sair</div>
+    <div class="subtitle">Encerrar sessão</div>
+</div>
+
+</div>
+
+<nav>
+<div onclick="location.href='admin.html'">⚙️<br>Admin</div>
+<div onclick="location.href='financeiro.html'">💰<br>Financeiro</div>
+<div onclick="location.href='pedidos-admin.html'">📦<br>Pedidos</div>
+<div onclick="location.href='index.html'">🏠<br>Loja</div>
+</nav>
+
+<script>
+if(localStorage.getItem("adminLogado") !== "true"){
+    location.href = "login-admin.html";
+}
+
+function logout(){
+    localStorage.removeItem("adminLogado");
+    location.href = "login-admin.html";
+}
+</script>
+
+</body>
+</html>

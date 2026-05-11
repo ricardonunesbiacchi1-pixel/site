@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar Produto</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#020617;
+    color:white;
+}
+
+header{
+    background:#0f172a;
+    padding:18px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.box{
+    background:#0f172a;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:10px;
+    background:#111827;
+    color:white;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    color:white;
+}
+
+.create{ background:#22c55e; }
+.edit{ background:#3b82f6; }
+.delete{ background:#ef4444; }
+.back{ background:#64748b; }
+
+.item{
+    background:#111827;
+    padding:15px;
+    border-radius:12px;
+    margin-top:10px;
+}
+
+.item img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:10px;
+    margin-top:8px;
+}
+
+.preview{
+    margin-top:10px;
+    text-align:center;
+}
+
+.preview img{
+    width:120px;
+    border-radius:12px;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.actions button{
+    flex:1;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+➕ Criar Produto
+</header>
+
+<div class="container">
+
+<div class="box">
+    <h3>Novo Produto</h3>
+
+    <input id="name" placeholder="Nome do produto">
+    <input id="price" placeholder="Preço">
+    <input id="image" placeholder="URL da imagem" oninput="previewImage()">
+    <input id="description" placeholder="Descrição">
+
+    <div class="preview" id="preview"></div>
+
+    <button class="create" onclick="addProduct()">Criar Produto</button>
+    <button class="back" onclick="location.href='admin.html'">Voltar ao Admin</button>
+</div>
+
+<div class="box">
+    <h3>Produtos Cadastrados</h3>
+    <div id="products"></div>
+</div>
+
+</div>
+
+<script>
+const API = "https://juncture-erasure-gangway.ngrok-free.dev/products";
+
+function previewImage(){
+    let url = document.getElementById("image").value;
+
+    document.getElementById("preview").innerHTML = url
+        ? `<img src="${url}">`
+        : "";
+}
+
+/* carregar produtos */
+async function loadAll(){
+    try{
+        const res = await fetch(API);
+        const products = await res.json();
+
+        console.log("Produtos recebidos:", products);
+
+        const div = document.getElementById("products");
+        div.innerHTML = "";
+
+        products.forEach(p=>{
+            div.innerHTML += `
+            <div class="item">
+                <b>${p.name}</b><br>
+                R$ ${p.price}<br>
+                ${p.description || ""}
+                <br>
+                <img src="${p.image}">
+                
+                <div class="actions">
+                    <button class="edit" onclick="editProduct(${p.id})">Editar</button>
+                    <button class="delete" onclick="deleteProduct(${p.id})">Excluir</button>
+                </div>
+            </div>
+            `;
+        });
+
+    }catch(err){
+        console.log("Erro ao carregar:", err);
+        alert("Erro ao carregar produtos");
+    }
+}
+
+/* criar */
+async function addProduct(){
+
+    const product = {
+        id: Date.now(),
+        name: document.getElementById("name").value,
+        price: Number(document.getElementById("price").value),
+        image: document.getElementById("image").value,
+        description: document.getElementById("description").value
+    };
+
+    try{
+        const res = await fetch(API,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(product)
+        });
+
+        if(!res.ok){
+            throw new Error("Erro HTTP: " + res.status);
+        }
+
+        const data = await res.json();
+        console.log("Produto criado:", data);
+
+        document.getElementById("name").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("preview").innerHTML = "";
+
+        loadAll();
+
+    }catch(err){
+        console.log("Erro ao criar:", err);
+        alert("Erro ao criar produto: " + err.message);
+    }
+}
+
+
+/* excluir */
+async function deleteProduct(id){
+    await fetch(API + "/" + id,{
+        method:"DELETE"
+    });
+
+    loadAll();
+}
+
+/* editar */
+async function editProduct(id){
+    const price = prompt("Novo preço:");
+
+    if(!price) return;
+
+    await fetch(API + "/" + id,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            price:Number(price)
+        })
+    });
+
+    loadAll();
+}
+
+loadAll();
+</script>
+
+</body>
+</html>

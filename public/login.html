@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+body{
+    background:#020617;
+    color:white;
+    font-family:Arial;
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.box{
+    width:100%;
+    max-width:400px;
+    background:#0f172a;
+    padding:25px;
+    border-radius:15px;
+}
+
+h1{
+    text-align:center;
+    color:#38bdf8;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#16a34a;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#22c55e;
+}
+
+small{
+    display:block;
+    text-align:center;
+    margin-top:10px;
+    opacity:0.8;
+}
+
+.loading{
+    opacity:0.6;
+    pointer-events:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>Login</h1>
+
+<input type="email" id="email" placeholder="E-mail">
+<input type="password" id="senha" placeholder="Senha">
+
+<button id="btn" onclick="login()">Entrar</button>
+
+<small id="msg"></small>
+
+</div>
+
+<script>
+
+const API = "http://26.86.46.84:3000/login";
+
+async function login(){
+
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btn");
+
+    if(!email || !senha){
+        msg.innerText = "Preencha todos os campos";
+        return;
+    }
+
+    try{
+
+        btn.classList.add("loading");
+        btn.innerText = "Entrando...";
+
+        const res = await fetch(API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                password: senha
+            })
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            msg.innerText = "Login realizado!";
+
+            setTimeout(()=>{
+                window.location.href = "index.html";
+            },1000);
+
+        } else {
+            msg.innerText = data.error || "Erro no login";
+        }
+
+    } catch(err){
+        console.log(err);
+        msg.innerText = "Erro de conexão com servidor";
+    }
+
+    btn.classList.remove("loading");
+    btn.innerText = "Entrar";
+}
+
+</script>
+
+</body>
+</html>

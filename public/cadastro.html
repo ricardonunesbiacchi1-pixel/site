@@ -1,0 +1,45 @@
+<script>
+
+const API = "https://juncture-erasure-gangway.ngrok-free.dev";
+
+async function cadastrar(){
+
+    const nome = document.getElementById("nome").value;
+    const sobrenome = document.getElementById("sobrenome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    if(!nome || !email || !senha){
+        document.getElementById("msg").innerText = "Preencha todos os campos!";
+        return;
+    }
+
+    try {
+
+        const res = await fetch(API + "/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: nome + " " + sobrenome,
+                email,
+                password: senha
+            })
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+            document.getElementById("msg").innerText = "Conta criada com sucesso!";
+        } else {
+            document.getElementById("msg").innerText = data.error || "Erro ao criar conta";
+        }
+
+    } catch (err) {
+        console.log(err);
+        document.getElementById("msg").innerText = "Erro de conexão com servidor";
+    }
+}
+
+</script>

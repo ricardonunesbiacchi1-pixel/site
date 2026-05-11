@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja Pro</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+overflow-x:hidden;
+}
+
+/* HEADER */
+header{
+display:flex;
+justify-content:space-between;
+padding:15px;
+background:#111827;
+position:sticky;
+top:0;
+z-index:10;
+}
+
+/* PRODUTOS */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:15px;
+padding:15px;
+}
+
+.card{
+background:#111827;
+border-radius:16px;
+overflow:hidden;
+transition:0.2s;
+}
+
+.card:hover{
+transform:scale(1.03);
+}
+
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+}
+
+.card-body{
+padding:10px;
+}
+
+.price{
+color:#22c55e;
+font-weight:bold;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+background:#16a34a;
+color:white;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* BOTÃO CARRINHO */
+.cart-btn{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#16a34a;
+padding:15px 20px;
+border-radius:50px;
+display:flex;
+gap:10px;
+align-items:center;
+cursor:pointer;
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* OVERLAY */
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+opacity:0;
+pointer-events:none;
+transition:0.3s;
+z-index:50;
+}
+
+.overlay.active{
+opacity:1;
+pointer-events:auto;
+}
+
+/* CARRINHO LATERAL */
+.cart{
+position:fixed;
+top:0;
+right:-400px;
+width:340px;
+height:100%;
+background:#0f172a;
+padding:15px;
+transition:0.35s ease;
+z-index:100;
+box-shadow:-10px 0 30px rgba(0,0,0,0.5);
+}
+
+.cart.active{
+right:0;
+}
+
+/* ITEM */
+.item{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#111827;
+padding:10px;
+border-radius:12px;
+margin-bottom:10px;
+animation:fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+/* CONTROLES */
+.controls{
+display:flex;
+gap:5px;
+align-items:center;
+}
+
+.controls button{
+width:30px;
+height:30px;
+border-radius:8px;
+padding:0;
+font-size:16px;
+}
+
+/* TOTAL */
+.total{
+font-size:18px;
+color:#22c55e;
+font-weight:bold;
+margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<div>🛍 Loja Pro</div>
+</header>
+
+<div class="grid" id="products"></div>
+
+<!-- BOTÃO CARRINHO -->
+<div class="cart-btn" onclick="toggleCart()">
+🛒 <span id="count">0</span>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+
+<!-- CARRINHO -->
+<div class="cart" id="cart">
+<h2>Seu Carrinho</h2>
+
+<div id="items"></div>
+
+<div class="total">
+Total: R$ <span id="total">0</span>
+</div>
+
+<button onclick="checkout()">Finalizar compra</button>
+</div>
+
+<script>
+
+let products = [
+{id:1,name:"Tênis Nike",price:199,image:"https://via.placeholder.com/300"},
+{id:2,name:"Relógio",price:120,image:"https://via.placeholder.com/300"},
+{id:3,name:"Boné",price:60,image:"https://via.placeholder.com/300"}
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function render(){
+let div = document.getElementById("products");
+
+products.forEach(p=>{
+div.innerHTML += `
+<div class="card">
+<img src="${p.image}">
+<div class="card-body">
+<h3>${p.name}</h3>
+<div class="price">R$ ${p.price}</div>
+<button onclick='add(${JSON.stringify(p)})'>Adicionar</button>
+</div>
+</div>`;
+});
+}
+
+function toggleCart(){
+document.getElementById("cart").classList.toggle("active");
+document.getElementById("overlay").classList.toggle("active");
+}
+
+function add(p){
+let item = cart.find(i=>i.id===p.id);
+item ? item.qtd++ : cart.push({...p,qtd:1});
+save();
+}
+
+function change(id,delta){
+let item = cart.find(i=>i.id===id);
+item.qtd += delta;
+if(item.qtd<=0) cart = cart.filter(i=>i.id!==id);
+save();
+}
+
+function save(){
+localStorage.setItem("cart",JSON.stringify(cart));
+update();
+}
+
+function update(){
+let items = document.getElementById("items");
+items.innerHTML="";
+
+let total=0;
+let count=0;
+
+cart.forEach(p=>{
+total += p.price * p.qtd;
+count += p.qtd;
+
+items.innerHTML += `
+<div class="item">
+<div>
+<b>${p.name}</b><br>
+R$ ${p.price}
+</div>
+
+<div class="controls">
+<button onclick="change(${p.id},-1)">-</button>
+<span>${p.qtd}</span>
+<button onclick="change(${p.id},1)">+</button>
+</div>
+</div>`;
+});
+
+document.getElementById("count").innerText=count;
+document.getElementById("total").innerText=total.toFixed(2);
+}
+
+function checkout(){
+alert("Aqui você integraria pagamento real (PIX/cartão) via backend");
+}
+
+render();
+update();
+
+</script>
+
+</body>
+</html>

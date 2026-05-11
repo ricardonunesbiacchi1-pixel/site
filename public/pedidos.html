@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Meus Pedidos</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#020617;
+color:white;
+padding-bottom:80px;
+}
+
+h2{
+padding:15px;
+}
+
+/* CARD */
+.card{
+background:#0f172a;
+margin:10px;
+padding:15px;
+border-radius:14px;
+}
+
+/* ITEM */
+.item{
+display:flex;
+gap:10px;
+margin-top:10px;
+background:#111827;
+padding:10px;
+border-radius:10px;
+align-items:center;
+}
+
+.item img{
+width:60px;
+height:60px;
+border-radius:10px;
+object-fit:cover;
+background:#1f2937;
+}
+
+/* TEXTO */
+.info{
+font-size:13px;
+opacity:0.8;
+}
+
+/* NOME */
+.title{
+font-size:16px;
+font-weight:bold;
+margin-top:5px;
+}
+
+/* PREÇO */
+.price{
+font-size:20px;
+font-weight:bold;
+margin-top:10px;
+color:#22c55e;
+}
+
+/* STATUS SIMPLES (SEM CORES) */
+.status{
+display:inline-block;
+margin-top:8px;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+background:#1f2937;
+text-transform:capitalize;
+}
+
+/* BOTÃO CANCELAR */
+.cancel{
+margin-top:10px;
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+background:#ef4444;
+color:white;
+font-weight:bold;
+}
+
+/* STATUS BAR */
+.status-bar{
+display:flex;
+justify-content:space-between;
+margin-top:15px;
+position:relative;
+}
+
+.step{
+flex:1;
+text-align:center;
+font-size:11px;
+position:relative;
+}
+
+.circle{
+width:10px;
+height:10px;
+border-radius:50%;
+background:#374151;
+margin:auto;
+margin-bottom:5px;
+transition:0.3s;
+}
+
+.active .circle{
+background:#22c55e;
+box-shadow:0 0 10px #22c55e;
+transform:scale(1.2);
+}
+
+.line{
+position:absolute;
+top:5px;
+left:0;
+width:100%;
+height:2px;
+background:#374151;
+z-index:-1;
+}
+
+/* NAV */
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:60px;
+background:#0f172a;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid #1f2937;
+}
+
+.nav button{
+background:none;
+border:none;
+color:white;
+font-size:12px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>📦 Meus Pedidos</h2>
+
+<div id="list"></div>
+
+<div class="nav">
+<button onclick="location.href='index.html'">🏠 Home</button>
+<button onclick="location.href='index.html'">🛒 Carrinho</button>
+<button>📦 Pedidos</button>
+<button onclick="location.href='conta.html'">👤 Conta</button>
+</div>
+
+<script>
+
+const API = "https://juncture-erasure-gangway.ngrok-free.dev";
+
+/* STATUS */
+function step(status){
+if(status==="pendente") return 1;
+if(status==="preparando") return 2;
+if(status==="enviado") return 3;
+if(status==="entregue") return 4;
+if(status==="cancelado") return 0;
+return 1;
+}
+
+/* LOAD */
+async function load(){
+
+const res = await fetch(API + "/orders");
+const data = await res.json();
+
+const div = document.getElementById("list");
+div.innerHTML = "";
+
+data.forEach(p=>{
+
+const current = step(p.status);
+
+const items = (p.items || []).map(i=>`
+<div class="item">
+
+<img src="${i.image || 'https://via.placeholder.com/80'}"
+onerror="this.src='https://via.placeholder.com/80'">
+
+<div>
+<div class="title">${i.name || "Produto"}</div>
+<div class="info">Qtd: ${i.qtd || 1}</div>
+</div>
+
+</div>
+`).join("");
+
+div.innerHTML += `
+<div class="card">
+
+<b>Pedido #${p.id}</b>
+
+<div class="info">${p.cliente || "-"}</div>
+
+${items}
+
+<div class="price">
+R$ ${Number(p.total || 0).toFixed(2)}
+</div>
+
+<div class="status">
+${p.status}
+</div>
+
+<div class="status-bar">
+
+<div class="line"></div>
+
+<div class="step ${current>=1?'active':''}">
+<div class="circle"></div>
+Pendente
+</div>
+
+<div class="step ${current>=2?'active':''}">
+<div class="circle"></div>
+Preparo
+</div>
+
+<div class="step ${current>=3?'active':''}">
+<div class="circle"></div>
+Envio
+</div>
+
+<div class="step ${current>=4?'active':''}">
+<div class="circle"></div>
+Entregue
+</div>
+
+</div>
+
+${p.status!=='cancelado' ? `
+<button class="cancel" onclick="cancel(${p.id})">
+Cancelar pedido
+</button>
+` : ''}
+
+</div>
+`;
+
+});
+
+}
+
+/* CANCELAR */
+async function cancel(id){
+
+await fetch(API + "/orders/" + id,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({status:"cancelado"})
+});
+
+load();
+}
+
+load();
+
+</script>
+
+</body>
+</html>

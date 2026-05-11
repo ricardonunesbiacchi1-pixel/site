@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Fone Bluetooth",
+    "price": 129.9,
+    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+    "description": "Fone bluetooth sem fio com alta qualidade sonora e bateria duradoura."
+  },
+  {
+    "id": 2,
+    "name": "Relógio Smartwatch",
+    "price": 249.9,
+    "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12",
+    "description": "Smartwatch com monitor cardíaco, notificações e resistência à água."
+  },
+  {
+    "id": 3,
+    "name": "Roupa Feminina",
+    "price": 89.9,
+    "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b",
+    "description": "Conjunto feminino moderno e confortável para uso casual."
+  },
+  {
+    "id": 4,
+    "name": "Luminária Decorativa",
+    "price": 59.9,
+    "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+    "description": "Luminária decorativa moderna para quarto, sala ou escritório."
+  },
+  {
+    "id": 5,
+    "name": "Banco de Bicicleta",
+    "price": 79.9,
+    "image": "https://images.unsplash.com/photo-1485965120184-e220f721d03e",
+    "description": "Banco ergonômico para bicicleta com espuma confortável."
+  },
+  {
+    "id": 1778378746079,
+    "name": "Fone De Ouvido bluetooth 5.1 M10 Sem Fio tws Estéreo Com carregador portátil",
+    "price": 35,
+    "image": "https://down-br.img.susercontent.com/file/br-11134207-820lf-mnixy175jf28d9@resize_w900_nl.webp",
+    "description": ""
+  },
+  {
+    "id": 1778469712532,
+    "name": "teste",
+    "price": 1,
+    "image": "",
+    "description": ""
+  }
+]

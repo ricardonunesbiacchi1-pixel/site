@@ -1,0 +1,18 @@
+[
+  {
+    "nome": "ricardo nunes",
+    "endereco": "av joao antonio silveira 2918",
+    "pagamento": "Pagamento na entrega",
+    "entrega": "Entrega expressa - R$20,00",
+    "data": "01/05/2026, 20:11:18",
+    "status": "Entregue"
+  },
+  {
+    "nome": "ricardo nunes",
+    "endereco": "av joao antonio silveira 2918",
+    "pagamento": "Pagamento na entrega",
+    "entrega": "Entrega expressa - R$20,00",
+    "data": "01/05/2026, 20:15:23",
+    "status": "Em preparação"
+  }
+]

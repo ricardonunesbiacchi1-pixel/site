@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0B1120;
+color:white;
+padding:20px;
+}
+
+.box{
+max-width:500px;
+margin:auto;
+background:#111827;
+padding:20px;
+border-radius:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#1F2937;
+border:none;
+border-radius:10px;
+color:white;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:15px;
+background:#2563EB;
+border:none;
+border-radius:10px;
+color:white;
+}
+
+.result{
+margin-top:20px;
+font-size:18px;
+line-height:1.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>💰 Calculadora de Lucro</h2>
+
+<input id="cost" placeholder="Custo do produto">
+
+<input id="price" placeholder="Preço de venda">
+
+<input id="goal" placeholder="Meta de lucro">
+
+<button onclick="calcular()">
+Calcular
+</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+function calcular(){
+
+const cost =
+Number(document.getElementById("cost").value);
+
+const price =
+Number(document.getElementById("price").value);
+
+const goal =
+Number(document.getElementById("goal").value);
+
+const lucro = price - cost;
+
+const margem =
+((lucro / price) * 100).toFixed(1);
+
+const vendas =
+Math.ceil(goal / lucro);
+
+document.getElementById("result").innerHTML = `
+
+💵 Lucro por venda:
+<b>R$ ${lucro.toFixed(2)}</b>
+
+<br><br>
+
+📈 Margem:
+<b>${margem}%</b>
+
+<br><br>
+
+🎯 Para lucrar R$ ${goal}:
+
+<b>${vendas} vendas</b>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>

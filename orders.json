@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1778214069406,
+    "cliente": "Cliente",
+    "endereco": "aaaaaa, ggggg - bbbbbbb",
+    "items": [
+      {
+        "id": 1778213052798,
+        "name": "roda de aluminio",
+        "price": 1500,
+        "qtd": 3,
+        "image": "https://grupo4r.cdn.magazord.com.br/img/2024/09/produto/3831/post-10.png?ims=600x600"
+      },
+      {
+        "id": 1778213341165,
+        "name": "teste",
+        "price": 1.5,
+        "qtd": 1,
+        "image": "https://via.placeholder.com/80"
+      },
+      {
+        "id": 2,
+        "name": "Relógio Smartwatch",
+        "price": 249.9,
+        "qtd": 1,
+        "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12"
+      }
+    ],
+    "total": 4751.4,
+    "status": "pendente",
+    "date": "2026-05-08T04:21:09.406Z"
+  }
+]

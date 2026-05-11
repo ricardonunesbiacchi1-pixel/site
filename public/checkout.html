@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+.container{
+padding:15px;
+padding-bottom:120px;
+}
+
+.box{
+background:#111827;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+.title{
+font-weight:bold;
+margin-bottom:10px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:8px;
+border-radius:10px;
+border:none;
+background:#0f172a;
+color:white;
+box-sizing:border-box;
+}
+
+.metodos{
+display:grid;
+gap:10px;
+}
+
+.metodo{
+padding:12px;
+background:#0f172a;
+border-radius:10px;
+cursor:pointer;
+border:2px solid transparent;
+}
+
+.metodo.active{
+border:2px solid #22c55e;
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+font-size:14px;
+margin:5px 0;
+}
+
+.footer{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#020617;
+padding:15px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#16a34a;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.pixBox{
+text-align:center;
+margin-top:10px;
+}
+
+.pixBox img{
+width:180px;
+margin-top:10px;
+border-radius:10px;
+}
+
+.cupom-box{
+background:#0f172a;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="box">
+<div class="title">📍 Endereço</div>
+<input id="rua" placeholder="Rua">
+<input id="numero" placeholder="Número">
+<input id="cidade" placeholder="Cidade">
+</div>
+
+<div class="box">
+<div class="title">💳 Pagamento</div>
+
+<div class="metodos">
+<div class="metodo" onclick="select('pix')" id="pixBtn">PIX</div>
+<div class="metodo" onclick="select('cartao')" id="cartaoBtn">Cartão</div>
+<div class="metodo" onclick="select('dinheiro')" id="dinheiroBtn">Dinheiro</div>
+</div>
+
+<div id="pixArea" class="pixBox" style="display:none;">
+<p id="pixCode"></p>
+<img id="qr">
+<button onclick="copiarPix()">Copiar PIX</button>
+</div>
+
+<div id="cartaoArea" style="display:none;">
+<input placeholder="Número do cartão">
+<input placeholder="Nome no cartão">
+<input placeholder="CVV">
+</div>
+
+<div id="dinheiroArea" style="display:none;">
+<p>Pagamento em dinheiro na entrega</p>
+</div>
+
+</div>
+
+<div class="box">
+<div class="title">🛒 Resumo</div>
+<div id="lista"></div>
+
+<div class="cupom-box">
+<h3>🎟 Cupom de desconto</h3>
+<input id="cupom" placeholder="Digite seu cupom">
+<button onclick="aplicarCupom()">Aplicar Cupom</button>
+<p id="cupomMsg"></p>
+</div>
+
+<h3 id="totalFinal"></h3>
+</div>
+
+</div>
+
+<div class="footer">
+<button onclick="finalizar()">Finalizar Pedido</button>
+</div>
+
+<script>
+
+const API = "https://juncture-erasure-gangway.ngrok-free.dev";
+
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+let metodo = "";
+let desconto = 0;
+
+function calcularTotal(){
+    let total = carrinho.reduce((s,i)=>s+i.price*i.qtd,0);
+
+    if(desconto > 0){
+        total = total - (total * desconto / 100);
+    }
+
+    return total;
+}
+
+function render(){
+
+let lista = document.getElementById("lista");
+lista.innerHTML = "";
+
+carrinho.forEach(i=>{
+lista.innerHTML += `
+<div class="item">
+<span>${i.name} x${i.qtd}</span>
+<span>R$ ${(i.price*i.qtd).toFixed(2)}</span>
+</div>`;
+});
+
+updateTotal();
+}
+
+function updateTotal(){
+    document.getElementById("totalFinal").innerText =
+    "Total: R$ " + calcularTotal().toFixed(2);
+}
+
+function aplicarCupom(){
+
+    let cupom = document.getElementById("cupom").value.toUpperCase();
+
+    if(cupom === "PRIMEIRA10"){
+        desconto = 10;
+        document.getElementById("cupomMsg").innerText = "Cupom aplicado: 10% OFF";
+    }
+    else if(cupom === "FRETEGRATIS"){
+        desconto = 15;
+        document.getElementById("cupomMsg").innerText = "Cupom aplicado: 15% OFF";
+    }
+    else{
+        desconto = 0;
+        document.getElementById("cupomMsg").innerText = "Cupom inválido";
+    }
+
+    updateTotal();
+
+    if(metodo === "pix"){
+        showPix();
+    }
+}
+
+function select(tipo){
+
+metodo = tipo;
+
+document.querySelectorAll(".metodo").forEach(m=>m.classList.remove("active"));
+
+if(tipo === "pix"){
+document.getElementById("pixBtn").classList.add("active");
+showPix();
+}
+
+if(tipo === "cartao"){
+document.getElementById("cartaoBtn").classList.add("active");
+showCartao();
+}
+
+if(tipo === "dinheiro"){
+document.getElementById("dinheiroBtn").classList.add("active");
+showDinheiro();
+}
+}
+
+function showPix(){
+
+document.getElementById("pixArea").style.display="block";
+document.getElementById("cartaoArea").style.display="none";
+document.getElementById("dinheiroArea").style.display="none";
+
+let total = calcularTotal();
+
+let code = "PIX-"+Date.now()+"-TOTAL-"+total.toFixed(2);
+
+document.getElementById("pixCode").innerText = code;
+
+document.getElementById("qr").src =
+"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+code;
+}
+
+function showCartao(){
+document.getElementById("pixArea").style.display="none";
+document.getElementById("cartaoArea").style.display="block";
+document.getElementById("dinheiroArea").style.display="none";
+}
+
+function showDinheiro(){
+document.getElementById("pixArea").style.display="none";
+document.getElementById("cartaoArea").style.display="none";
+document.getElementById("dinheiroArea").style.display="block";
+}
+
+function copiarPix(){
+navigator.clipboard.writeText(document.getElementById("pixCode").innerText);
+alert("PIX copiado");
+}
+
+async function finalizar(){
+
+if(!metodo){
+alert("Escolha um pagamento");
+return;
+}
+
+let total = calcularTotal();
+
+const pedido = {
+cliente: "Cliente",
+
+endereco:
+document.getElementById("rua").value + ", " +
+document.getElementById("numero").value + " - " +
+document.getElementById("cidade").value,
+
+items: carrinho.map(i => ({
+id: i.id,
+name: i.name,
+price: i.price,
+qtd: i.qtd,
+image: i.image || "https://via.placeholder.com/80"
+})),
+
+total: total,
+status: "pendente",
+pagamento: metodo,
+cupom: document.getElementById("cupom").value || "",
+date: new Date().toISOString()
+};
+
+try{
+
+await fetch(API + "/orders", {
+method: "POST",
+headers: {"Content-Type":"application/json"},
+body: JSON.stringify(pedido)
+});
+
+alert("Pedido enviado!");
+
+localStorage.removeItem("carrinho");
+window.location.href = "index.html";
+
+}catch(err){
+console.log(err);
+alert("Erro ao enviar pedido");
+}
+}
+
+render();
+
+</script>
+
+</body>
+</html>
