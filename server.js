@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 /* ================= MIDDLEWARES ================= */
 
-app.use(cors()); // 🔥 CORREÇÃO PRINCIPAL
+app.use(cors()); // 🔥 libera acesso do frontend
 app.use(express.json());
 app.use(express.static("public"));
 
