@@ -15,41 +15,211 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* (SEU CSS CONTINUA IGUAL - NÃO PRECISA MEXER) */
-</style>
 
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Inter, Arial, sans-serif;
+background:#0B1120;
+color:#F9FAFB;
+padding-bottom:80px;
+}
+
+/* HEADER */
+header{
+position:sticky;
+top:0;
+z-index:20;
+background:rgba(11,17,32,.92);
+backdrop-filter:blur(12px);
+padding:12px;
+display:flex;
+gap:10px;
+align-items:center;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.search{
+flex:1;
+background:#111827;
+padding:14px;
+border-radius:14px;
+color:white;
+border:none;
+outline:none;
+font-size:14px;
+}
+
+/* BANNER */
+.banner{
+margin:15px;
+height:180px;
+border-radius:24px;
+background:linear-gradient(135deg,#2563EB,#1D4ED8,#0F172A);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-weight:700;
+font-size:28px;
+text-align:center;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+padding:14px;
+}
+
+/* CARD */
+.card{
+background:#111827;
+border-radius:20px;
+overflow:hidden;
+cursor:pointer;
+transition:.25s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
+
+.card-body{
+padding:12px;
+}
+
+.price{
+color:#22C55E;
+font-weight:700;
+font-size:20px;
+margin-top:8px;
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:12px;
+border:none;
+background:#2563EB;
+color:white;
+border-radius:12px;
+margin-top:10px;
+font-weight:600;
+cursor:pointer;
+}
+
+/* CART */
+.cart-btn{
+position:fixed;
+bottom:90px;
+right:15px;
+background:#2563EB;
+padding:14px 18px;
+border-radius:50px;
+cursor:pointer;
+}
+
+.whatsapp{
+position:fixed;
+bottom:160px;
+right:18px;
+background:#25D366;
+width:55px;
+height:55px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+cursor:pointer;
+}
+
+/* CART SIDE */
+#cart{
+position:fixed;
+top:0;
+right:-100%;
+width:85%;
+max-width:360px;
+height:100%;
+background:#0F172A;
+transition:.3s;
+padding:15px;
+overflow:auto;
+}
+
+#cart.active{right:0;}
+
+.item{
+display:flex;
+gap:10px;
+background:#111827;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.item img{
+width:50px;
+height:50px;
+border-radius:8px;
+object-fit:cover;
+}
+
+/* NAV */
+nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:65px;
+background:#0B1120;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(255,255,255,.05);
+}
+
+nav div{
+font-size:12px;
+text-align:center;
+cursor:pointer;
+}
+
+</style>
 </head>
 
 <body>
 
 <header>
-<input
-class="search"
-placeholder="Buscar produtos..."
-onkeyup="buscar(this.value)"
->
+<input class="search" placeholder="Buscar produtos..." onkeyup="buscar(this.value)">
 </header>
 
 <div class="banner">
-🔥 SUPER OFERTAS
-<span>Frete grátis acima de R$ 199</span>
+🔥 Super Ofertas
 </div>
 
 <div class="grid" id="produtos"></div>
 
-<div class="cart-btn" onclick="openCart()">
-🛒 <span id="count">0</span>
-</div>
-
-<div class="whatsapp" onclick="abrirWhatsapp()">💬</div>
-
-<div class="overlay" onclick="closeCart()" id="overlay"></div>
+<div class="cart-btn" onclick="openCart()">🛒 <span id="count">0</span></div>
+<div class="whatsapp" onclick="window.open('https://wa.me/5551989644295')">💬</div>
 
 <div id="cart">
 <h3>Carrinho</h3>
 <div id="items"></div>
 <h3 id="total"></h3>
-<button onclick="checkout()">Finalizar Compra</button>
+<button onclick="checkout()">Finalizar</button>
 </div>
 
 <nav>
@@ -61,122 +231,54 @@ onkeyup="buscar(this.value)"
 
 <script>
 
-/* ================= API CORRIGIDA ================= */
-
-const API = "https://site-j3p8.onrender.com";
-
-/* ================= VARIÁVEIS ================= */
+/* ================= FIX PRINCIPAL ================= */
+// agora aponta para Render (SEM ngrok)
+const API = "https://site-j3p8.onrender.com/products";
 
 let produtos = [];
-
-let carrinho =
-JSON.parse(localStorage.getItem("carrinho")) || [];
-
-const produtosDiv = document.getElementById("produtos");
-const itemsDiv = document.getElementById("items");
-
-/* ================= PRODUTOS ================= */
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
 function abrirProduto(id){
-    window.location.href = "produtos1.html?id=" + id;
-}
-
-function abrirWhatsapp(){
-    window.open(
-        "https://wa.me/5551989644295?text=Olá,%20vim%20pela%20loja%20e%20preciso%20de%20ajuda",
-        "_blank"
-    );
+location.href = "produtos1.html?id=" + id;
 }
 
 function render(lista){
 
-produtosDiv.innerHTML = "";
+const div = document.getElementById("produtos");
+div.innerHTML = "";
 
-lista.forEach(p=>{
+lista.forEach(p => {
 
-produtosDiv.innerHTML += `
-<div class="card"
-onclick="abrirProduto('${p.id}')">
-
-<img src="${p.image}">
-
+div.innerHTML += `
+<div class="card" onclick="abrirProduto(${p.id})">
+<img src="${p.image || ''}">
 <div class="card-body">
-
-<h4>${p.name}</h4>
+<h4>${p.name || 'Sem nome'}</h4>
 
 <div class="price">
-R$ {Number(p.price).toFixed(2)}
+R$ ${(Number(p.price) || 0).toFixed(2)}
 </div>
 
-<button
-onclick='event.stopPropagation();
-comprarAgora(${JSON.stringify(p)})'>
-
-Comprar Agora
-
+<button onclick='event.stopPropagation(); comprar(${p.id})'>
+Comprar
 </button>
 
 </div>
-</div>
-`;
+</div>`;
 });
 }
 
-function buscar(txt){
+function comprar(id){
 
-txt = txt.toLowerCase();
+const p = produtos.find(x => x.id === id);
 
-const filtrados = produtos.filter(p=>
-p.name.toLowerCase().includes(txt)
-);
+let item = carrinho.find(i => i.id === id);
 
-render(filtrados);
-}
-
-/* ================= CARRINHO ================= */
-
-function comprarAgora(p){
-
-let item = carrinho.find(i => i.id === p.id);
-
-if(item){
-item.qtd++;
-}else{
-carrinho.push({
-id:p.id,
-name:p.name,
-price:Number(p.price),
-image:p.image,
-qtd:1
-});
-}
+if(item) item.qtd++;
+else carrinho.push({...p, qtd:1});
 
 save();
-
-window.location.href = "checkout.html";
-}
-
-function openCart(){
-document.getElementById("cart").classList.add("active");
-document.getElementById("overlay").classList.add("active");
-}
-
-function closeCart(){
-document.getElementById("cart").classList.remove("active");
-document.getElementById("overlay").classList.remove("active");
-}
-
-function change(id,d){
-
-let i = carrinho.find(i=>i.id===id);
-
-i.qtd += d;
-
-if(i.qtd<=0){
-carrinho = carrinho.filter(x=>x.id!==id);
-}
-
-save();
+openCart();
 }
 
 function save(){
@@ -186,73 +288,53 @@ update();
 
 function update(){
 
-itemsDiv.innerHTML = "";
+let items = document.getElementById("items");
+items.innerHTML = "";
 
 let total = 0;
 let count = 0;
 
-carrinho.forEach(i=>{
+carrinho.forEach(i => {
 
-total += i.price*i.qtd;
+total += (i.price || 0) * i.qtd;
 count += i.qtd;
 
-itemsDiv.innerHTML += `
+items.innerHTML += `
 <div class="item">
-
 <img src="${i.image}">
-
-<div style="flex:1">
-${i.name}
-<br>
-R$ ${i.price}
-</div>
-
-<div class="qty">
-
-<button onclick="change(${i.id},-1)">-</button>
-
-${i.qtd}
-
-<button onclick="change(${i.id},1)">+</button>
-
-</div>
-
-</div>
-`;
+<div style="flex:1">${i.name}<br>R$ ${i.price}</div>
+<div>${i.qtd}</div>
+</div>`;
 });
 
 document.getElementById("count").innerText = count;
-document.getElementById("total").innerText =
-"Total R$ " + total.toFixed(2);
+document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
+}
+
+function openCart(){
+document.getElementById("cart").classList.toggle("active");
 }
 
 function checkout(){
-location.href = "checkout.html";
+location.href="checkout.html";
 }
 
-/* ================= LOAD PRODUTOS ================= */
+function buscar(t){
+render(produtos.filter(p => (p.name || "").toLowerCase().includes(t.toLowerCase())));
+}
 
-async function carregarProdutos(){
-
-try{
-
-const res = await fetch(API + "/products");
-
+async function load(){
+try {
+const res = await fetch(API);
 produtos = await res.json();
-
 render(produtos);
-
 update();
-
-}catch(err){
-
-console.log("Erro ao carregar produtos:", err);
-
+} catch(err){
+console.log("Erro ao carregar:", err);
+}
 }
 
-}
-
-carregarProdutos();
+load();
 
 </script>
 
